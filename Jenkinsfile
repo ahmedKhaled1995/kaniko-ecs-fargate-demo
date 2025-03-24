@@ -10,7 +10,6 @@ pipeline {
     stages {
         stage('Build Docker Image') {
             steps {
-                container('kaniko') {
                     sh '''
                         echo 'ls'
                         ls
@@ -19,7 +18,6 @@ pipeline {
                         --dockerfile ${WORKSPACE}/Dockerfile \
                         --destination ${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${REPO_NAME}:latest
                     '''
-                }
             }
         }
     }
