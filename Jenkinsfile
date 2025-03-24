@@ -8,11 +8,6 @@ pipeline {
         REPO_NAME = 'kaniko-demo'
     }
     stages {
-        stage('Clone Code') {
-            steps {
-                git 'https://github.com/ahmedKhaled1995/kaniko-ecs-fargate-demo.git'
-            }
-        }
         stage('Build Docker Image') {
             steps {
                 container('kaniko') {
