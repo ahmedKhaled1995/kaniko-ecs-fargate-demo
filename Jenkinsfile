@@ -12,6 +12,8 @@ pipeline {
             steps {
                 container('kaniko') {
                     sh '''
+                        echo 'ls'
+                        ls
                         /kaniko/executor \
                         --context ${WORKSPACE} \
                         --dockerfile ${WORKSPACE}/Dockerfile \
