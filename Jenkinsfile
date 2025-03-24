@@ -66,25 +66,38 @@ pipeline {
             }
         }
 
-        stage("Deploy ECS"){
-            steps{
+        stage("Deploy ECS") {
+            steps {
                 withCredentials([usernamePassword(credentialsId: 'AWS_CRED', usernameVariable: 'AWS_ACCESS_KEY_ID', passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
-                    echo "deploy"
+                    echo "Deploying ECS..."
                     sh '''
                         export REPO="${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${REPO_NAME}"
                         sed -i.bak "s|IMAGE_VALUE|${REPO}|g" ./${TERRAFORM_ECS_MANIFESTS_CLONE_FOLDER_PATH}/${TERRAFORM_WORKSPACE_TFVARS}
                         sed -i.bak "s|TAG_VALUE|${TAG}|g" ./${TERRAFORM_ECS_MANIFESTS_CLONE_FOLDER_PATH}/${TERRAFORM_WORKSPACE_TFVARS}
+
                         export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
                         export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+
                         cd ${TERRAFORM_ECS_MANIFESTS_CLONE_FOLDER_PATH}
+                        
                         terraform init
-                        terraform workspace select ${TERRAFORM_WORKSPACE} 
+
+                        # Check if the workspace exists, create it if it doesn’t
+                        if terraform workspace list | grep -q "^\\s*${TERRAFORM_WORKSPACE}$"; then
+                            echo "Workspace '${TERRAFORM_WORKSPACE}' exists. Selecting it..."
+                            terraform workspace select "${TERRAFORM_WORKSPACE}"
+                        else
+                            echo "Workspace '${TERRAFORM_WORKSPACE}' does not exist. Creating it..."
+                            terraform workspace new "${TERRAFORM_WORKSPACE}"
+                        fi
+
                         terraform plan -var-file=./${TERRAFORM_WORKSPACE_TFVARS}
                         terraform apply -var-file=./${TERRAFORM_WORKSPACE_TFVARS} --auto-approve
                     '''
                 }
             }
         }
+
 
     }
 
