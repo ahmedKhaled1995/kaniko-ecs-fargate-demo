@@ -65,7 +65,6 @@ pipeline {
             }
         }
 
-        // terraform apply -var-file=./${TERRAFORM_WORKSPACE_TFVARS} --auto-approve
         stage("Deploy ECS") {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'AWS_CRED', usernameVariable: 'AWS_ACCESS_KEY_ID', passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
@@ -92,6 +91,7 @@ pipeline {
                         fi
 
                         terraform plan -var-file=./${TERRAFORM_WORKSPACE_TFVARS}
+                        terraform apply -var-file=./${TERRAFORM_WORKSPACE_TFVARS} --auto-approve
                     '''
                 }
             }
