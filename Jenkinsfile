@@ -45,21 +45,21 @@ pipeline {
             }
         }
 
-        stage('Build Docker Image') {
-            steps {
-                    sh '''
-                        /kaniko/executor \
-                        --context ${WORKSPACE} \
-                        --dockerfile ${WORKSPACE}/Dockerfile \
-                        --destination ${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${REPO_NAME}:${TAG}
-                    '''
-            }
-        }
+        // stage('Build Docker Image') {
+        //     steps {
+        //             sh '''
+        //                 /kaniko/executor \
+        //                 --context ${WORKSPACE} \
+        //                 --dockerfile ${WORKSPACE}/Dockerfile \
+        //                 --destination ${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${REPO_NAME}:${TAG}
+        //             '''
+        //     }
+        // }
 
         stage('Pulling ecs Deployment Files') {
             steps {
-                dir("${env.TERRAFORM_ECS_MANIFESTS_CLONE_FOLDER_PATH}") {
-                    git branch: "${env.TERRAFORM_ECS_MANIFESTS_BRANCH}", credentialsId: 'git_repo_creds', url: '${TERRAFORM_ECS_MANIFESTS_REPO}'
+                dir("${TERRAFORM_ECS_MANIFESTS_CLONE_FOLDER_PATH}") {
+                    git branch: "${TERRAFORM_ECS_MANIFESTS_BRANCH}", credentialsId: 'git_repo_creds', url: "${TERRAFORM_ECS_MANIFESTS_REPO}"
                 }
 
             }
