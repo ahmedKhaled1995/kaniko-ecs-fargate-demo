@@ -9,9 +9,9 @@ pipeline {
     environment {
         AWS_REGION = 'us-east-1'
         ACCOUNT_ID = '234382811800'
-        REPO_NAME = 'kaniko-demo'
-        TERRAFORM_ECS_MANIFESTS_REPO = 'https://github.com/ahmedKhaled1995/kaniko-ecs-fargate-demo.git'
-        TERRAFORM_ECS_MANIFESTS_BRANCH = 'flask-app-ecs-manifests'
+        REPO_NAME = 'my-app'
+        TERRAFORM_ECS_MANIFESTS_REPO = 'https://github.com/ahmedKhaled1995/kaniko-ecs-fargate-manifests-demo.git'
+        TERRAFORM_ECS_MANIFESTS_BRANCH = 'my-app'
         TERRAFORM_ECS_MANIFESTS_CLONE_FOLDER_PATH = "ecs"
     }
 
@@ -59,13 +59,13 @@ pipeline {
         stage('Pulling ecs Deployment Files') {
             steps {
                 dir("${env.TERRAFORM_ECS_MANIFESTS_CLONE_FOLDER_PATH}") {
-                    //git branch: "${env.TERRAFORM_ECS_MANIFESTS_BRANCH}", credentialsId: 'git_repo_creds', url: '${TERRAFORM_ECS_MANIFESTS_REPO}'
-                    git branch: "${env.TERRAFORM_ECS_MANIFESTS_BRANCH}",  url: '${TERRAFORM_ECS_MANIFESTS_REPO}'
+                    git branch: "${env.TERRAFORM_ECS_MANIFESTS_BRANCH}", credentialsId: 'git_repo_creds', url: '${TERRAFORM_ECS_MANIFESTS_REPO}'
                 }
 
             }
         }
 
+        // terraform apply -var-file=./${TERRAFORM_WORKSPACE_TFVARS} --auto-approve
         stage("Deploy ECS") {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'AWS_CRED', usernameVariable: 'AWS_ACCESS_KEY_ID', passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
@@ -92,7 +92,6 @@ pipeline {
                         fi
 
                         terraform plan -var-file=./${TERRAFORM_WORKSPACE_TFVARS}
-                        terraform apply -var-file=./${TERRAFORM_WORKSPACE_TFVARS} --auto-approve
                     '''
                 }
             }
