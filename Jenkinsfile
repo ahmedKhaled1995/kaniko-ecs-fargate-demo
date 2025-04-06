@@ -45,16 +45,16 @@ pipeline {
             }
         }
 
-        // stage('Build Docker Image') {
-        //     steps {
-        //             sh '''
-        //                 /kaniko/executor \
-        //                 --context ${WORKSPACE} \
-        //                 --dockerfile ${WORKSPACE}/Dockerfile \
-        //                 --destination ${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${REPO_NAME}:${TAG}
-        //             '''
-        //     }
-        // }
+        stage('Build Docker Image') {
+            steps {
+                    sh '''
+                        /kaniko/executor \
+                        --context ${WORKSPACE} \
+                        --dockerfile ${WORKSPACE}/Dockerfile \
+                        --destination ${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${REPO_NAME}:${TAG}
+                    '''
+            }
+        }
 
         stage('Pulling ecs Deployment Files') {
             steps {
